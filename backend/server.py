@@ -184,7 +184,10 @@ async def generate_speech(request: TTSRequest):
     try:
         # Use OpenAI TTS API
         try:
-            response = openai.audio.speech.create(
+            from openai import OpenAI
+            client = OpenAI(api_key=OPENAI_API_KEY)
+            
+            response = client.audio.speech.create(
                 model="tts-1",
                 voice=request.voice,
                 speed=request.speed,
