@@ -111,7 +111,36 @@ function App() {
       // Highlight current bubble
       setCurrentBubbleIndex(bubbleIndex);
       
-      // For demo purposes, use Web Speech API as fallback
+      // Try OpenAI TTS API first
+      try {
+        const response = await axios.post(`${API}/generate-speech`, {
+          text: text,
+          voice: 'alloy',
+          speed: playbackSpeed
+        });
+        
+        if (response.data.audio_data && response.data.audio_data !== "") {
+          // Use OpenAI generated audio
+          const audio = new Audio(`data:audio/mp3;base64,${response.data.audio_data}`);
+          audio.onended = () => {
+            if (bubbleIndex < speechBubbles.length - 1) {
+              setTimeout(() => {
+                generateAndPlaySpeech(speechBubbles[bubbleIndex + 1].text, bubbleIndex + 1);
+              }, 500);
+            } else {
+              setIsPlaying(false);
+              setCurrentBubbleIndex(0);
+            }
+          };
+          await audio.play();
+          setCurrentAudio(audio);
+          return;
+        }
+      } catch (apiError) {
+        console.log('OpenAI TTS failed, using browser speech synthesis:', apiError);
+      }
+      
+      // Fallback to browser speech synthesis
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = playbackSpeed;
@@ -129,29 +158,6 @@ function App() {
         
         speechSynthesis.speak(utterance);
         setCurrentAudio(utterance);
-      } else {
-        // Try OpenAI TTS API
-        const response = await axios.post(`${API}/generate-speech`, {
-          text: text,
-          voice: 'alloy',
-          speed: playbackSpeed
-        });
-        
-        if (response.data.audio_data) {
-          const audio = new Audio(`data:audio/mp3;base64,${response.data.audio_data}`);
-          audio.onended = () => {
-            if (bubbleIndex < speechBubbles.length - 1) {
-              setTimeout(() => {
-                generateAndPlaySpeech(speechBubbles[bubbleIndex + 1].text, bubbleIndex + 1);
-              }, 500);
-            } else {
-              setIsPlaying(false);
-              setCurrentBubbleIndex(0);
-            }
-          };
-          audio.play();
-          setCurrentAudio(audio);
-        }
       }
     } catch (error) {
       console.error('Error generating speech:', error);
