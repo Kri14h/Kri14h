@@ -398,6 +398,31 @@ function App() {
                 </button>
               </div>
               
+              {/* Archive Navigation */}
+              {isArchiveMode && (
+                <div className="flex items-center justify-center space-x-4 mt-4 pt-4 border-t border-gray-600">
+                  <button
+                    onClick={previousPage}
+                    disabled={currentPageIndex === 0}
+                    className="p-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                  >
+                    ⬅️ Prev Page
+                  </button>
+                  
+                  <span className="text-sm text-gray-400">
+                    Page {currentPageIndex + 1} of {mangaPages.length}
+                  </span>
+                  
+                  <button
+                    onClick={nextPage}
+                    disabled={currentPageIndex >= mangaPages.length - 1}
+                    className="p-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                  >
+                    Next Page ➡️
+                  </button>
+                </div>
+              )}
+              
               {speechBubbles.length > 0 && (
                 <div className="mt-4 text-center">
                   <div className="text-sm text-gray-400">
