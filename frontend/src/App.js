@@ -26,15 +26,53 @@ function App() {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const base64Data = e.target.result;
-        setImageData(base64Data);
-        setMangaImage(base64Data);
-        analyzeManga(base64Data, file.name);
-      };
-      reader.readAsDataURL(file);
+      // Check if it's an archive file
+      const fileName = file.name.toLowerCase();
+      if (fileName.endsWith('.zip') || fileName.endsWith('.cbz') || fileName.endsWith('.rar')) {
+        handleArchiveUpload(file);
+      } else {
+        // Handle single image
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64Data = e.target.result;
+          setImageData(base64Data);
+          setMangaImage(base64Data);
+          setIsArchiveMode(false);
+          setMangaPages([]);
+          setCurrentPageIndex(0);
+          analyzeManga(base64Data, file.name);
+        };
+        reader.readAsDataURL(file);
+      }
     }
+  };
+
+  const handleArchiveUpload = async (file) => {
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axios.post(`${API}/extract-archive`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      const images = response.data.images;
+      if (images.length > 0) {
+        setMangaPages(images);
+        setIsArchiveMode(true);
+        setCurrentPageIndex(0);
+        setImageData(images[0].image_data);
+        setMangaImage(images[0].image_data);
+        analyzeManga(images[0].image_data, images[0].filename);
+      }
+    } catch (error) {
+      console.error('Error extracting archive:', error);
+      alert('Error extracting archive. Please try a different file.');
+    }
+    setIsLoading(false);
   };
 
   const analyzeManga = async (imageData, title) => {
