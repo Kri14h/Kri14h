@@ -15,6 +15,9 @@ function App() {
   const [currentAudio, setCurrentAudio] = useState(null);
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [highlightStyle, setHighlightStyle] = useState('glow');
+  const [mangaPages, setMangaPages] = useState([]);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [isArchiveMode, setIsArchiveMode] = useState(false);
   
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
