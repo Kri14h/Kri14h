@@ -181,7 +181,52 @@ async def analyze_manga_image(request: MangaPageCreate):
         logging.error(f"Error analyzing manga: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error analyzing manga: {str(e)}")
 
-@api_router.post("/generate-speech")
+@api_router.post("/extract-archive")
+async def extract_archive(file: UploadFile = File(...)):
+    """Extract images from ZIP or CBZ archives"""
+    try:
+        # Read the uploaded file
+        content = await file.read()
+        
+        # Check if it's a zip file
+        if not zipfile.is_zipfile(BytesIO(content)):
+            raise HTTPException(status_code=400, detail="File is not a valid ZIP/CBZ archive")
+        
+        # Extract images from the archive
+        extracted_images = []
+        with zipfile.ZipFile(BytesIO(content), 'r') as zip_file:
+            for file_info in zip_file.filelist:
+                if not file_info.is_dir():
+                    # Check if it's an image file
+                    filename = file_info.filename.lower()
+                    if any(filename.endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp']):
+                        try:
+                            # Extract and encode the image
+                            image_data = zip_file.read(file_info)
+                            base64_image = base64.b64encode(image_data).decode('utf-8')
+                            
+                            # Determine mime type
+                            mime_type = mimetypes.guess_type(filename)[0] or 'image/jpeg'
+                            
+                            extracted_images.append({
+                                "filename": file_info.filename,
+                                "image_data": f"data:{mime_type};base64,{base64_image}",
+                                "size": len(image_data)
+                            })
+                        except Exception as e:
+                            logging.warning(f"Could not extract image {file_info.filename}: {str(e)}")
+                            continue
+        
+        return {
+            "images": extracted_images,
+            "count": len(extracted_images),
+            "message": f"Extracted {len(extracted_images)} images from archive"
+        }
+        
+    except Exception as e:
+        logging.error(f"Error extracting archive: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error extracting archive: {str(e)}")
+
 async def generate_speech(request: TTSRequest):
     try:
         # Use OpenAI TTS API
