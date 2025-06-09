@@ -203,6 +203,7 @@ function App() {
       analyzeManga(mangaPages[newIndex].image_data, mangaPages[newIndex].filename);
     }
   };
+  const nextBubble = () => {
     if (currentBubbleIndex < speechBubbles.length - 1) {
       const newIndex = currentBubbleIndex + 1;
       setCurrentBubbleIndex(newIndex);
