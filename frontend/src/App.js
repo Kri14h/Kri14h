@@ -184,7 +184,25 @@ function App() {
     }
   };
 
-  const nextBubble = () => {
+  const nextPage = () => {
+    if (isArchiveMode && currentPageIndex < mangaPages.length - 1) {
+      const newIndex = currentPageIndex + 1;
+      setCurrentPageIndex(newIndex);
+      setImageData(mangaPages[newIndex].image_data);
+      setMangaImage(mangaPages[newIndex].image_data);
+      analyzeManga(mangaPages[newIndex].image_data, mangaPages[newIndex].filename);
+    }
+  };
+
+  const previousPage = () => {
+    if (isArchiveMode && currentPageIndex > 0) {
+      const newIndex = currentPageIndex - 1;
+      setCurrentPageIndex(newIndex);
+      setImageData(mangaPages[newIndex].image_data);
+      setMangaImage(mangaPages[newIndex].image_data);
+      analyzeManga(mangaPages[newIndex].image_data, mangaPages[newIndex].filename);
+    }
+  };
     if (currentBubbleIndex < speechBubbles.length - 1) {
       const newIndex = currentBubbleIndex + 1;
       setCurrentBubbleIndex(newIndex);
