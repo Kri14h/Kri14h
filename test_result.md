@@ -233,3 +233,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Built complete immersive manga TTS app with OpenAI integration. Key features: real-time speech bubble detection, coordinate-based highlighting, synchronized TTS narration, multiple highlight styles. Backend has fallback mechanisms if OpenAI API fails. Ready for backend testing to verify API integrations work properly."
+  - agent: "testing"
+    message: "Completed testing of all backend API endpoints. All endpoints are working correctly with proper error handling and fallback mechanisms. The OpenAI API integration has issues with the API key, but the fallback mechanisms are working as expected. The database operations are also working correctly. Created and executed comprehensive tests in backend_test.py."
