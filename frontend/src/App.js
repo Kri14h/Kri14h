@@ -350,7 +350,7 @@ function App() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,.zip,.cbz,.rar"
                 onChange={handleImageUpload}
                 className="hidden"
               />
@@ -359,11 +359,11 @@ function App() {
                 onClick={() => fileInputRef.current?.click()}
                 className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors"
               >
-                Choose Manga Image
+                Choose Manga Image or Archive
               </button>
               
               <div className="mt-8 text-sm text-gray-500">
-                Supports: JPG, PNG, WebP, GIF
+                Supports: JPG, PNG, WebP, GIF, ZIP, CBZ archives
               </div>
             </div>
           </div>
