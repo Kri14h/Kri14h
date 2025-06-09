@@ -78,8 +78,11 @@ async def analyze_manga_image(request: MangaPageCreate):
         
         # Use OpenAI Vision API to analyze the manga image
         try:
-            response = openai.chat.completions.create(
-                model="gpt-4-vision-preview",
+            from openai import OpenAI
+            client = OpenAI(api_key=OPENAI_API_KEY)
+            
+            response = client.chat.completions.create(
+                model="gpt-4o",
                 messages=[
                     {
                         "role": "user",
